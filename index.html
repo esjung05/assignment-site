@@ -10,7 +10,7 @@
             font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
             background-color: #f0f4f8;
             margin: 0;
-            padding: 0;
+            padding: 20px 0;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -90,9 +90,7 @@
             margin-bottom: 20px;
             text-align: left;
             position: relative;
-            background-image: radial-gradient(#3b82f6 0.5px, transparent 0.5px), radial-gradient(#3b82f6 0.5px, #fff 0.5px);
             background-size: 20px 20px;
-            background-position: 0 0, 10px 10px;
             background-color: rgba(240, 246, 255, 0.4);
         }
         .rx-header {
@@ -160,11 +158,85 @@
             text-align: center;
             margin-top: 10px;
         }
+
+        /* [디벨롭 2번] 백색소음 BGM 섹션 스타일 */
+        .bgm-box {
+            background-color: #fffbeb;
+            border: 1px solid #fef3c7;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: left;
+        }
+        .bgm-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #b45309;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .bgm-link-btn {
+            display: inline-block;
+            background-color: #d97706;
+            color: white;
+            text-decoration: none;
+            padding: 8px 12px;
+            font-size: 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .bgm-link-btn:hover { background-color: #b45309; }
+
+        /* [디벨롭 3번] 통계 리포트 섹션 스타일 */
+        .stats-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        .stats-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #334155;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .stat-row { margin-bottom: 12px; }
+        .stat-row:last-child { margin-bottom: 0; }
+        .stat-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #475569;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .progress-bar {
+            background-color: #e2e8f0;
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background-color: #94a3b8;
+            height: 100%;
+            width: 0%;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
+        <!-- 첫번째 화면 -->
         <div id="page1" class="page active">
             <h1>DOC | 책 처방 프로그램</h1>
             <p style="color: #4a90e2; font-weight: bold; margin-bottom: 5px;">📖 오늘 내 기분에 맞는 책 처방전 📖</p>
@@ -172,6 +244,7 @@
             <button class="btn" onclick="nextPage(2)">처방받기 시작</button>
         </div>
 
+        <!-- 두번째 화면 -->
         <div id="page2" class="page">
             <h1>현재 기분을 선택해주세요</h1>
             <p>언어학과 정은서 소장님이 당신의 감정을 분석합니다.</p>
@@ -185,10 +258,12 @@
             <button class="btn" onclick="getPrescription()">책 처방전 발행하기</button>
         </div>
 
+        <!-- 세번째 화면 (최종 페이지: 디벨롭 1, 2, 3, 4번 모두 통합) -->
         <div id="page3" class="page">
             <h1>오늘의 책 처방 결과입니다!</h1>
             <p>학우님의 마음에 맞춰 발행된 복약 지도서입니다.</p>
             
+            <!-- [디벨롭 1번] 약국 처방전 형태의 컨테이너 -->
             <div class="prescription-box">
                 <div class="rx-header">
                     <div class="rx-title">處方箋 (처방전)</div>
@@ -198,10 +273,42 @@
                     </div>
                 </div>
                 
-                <div id="result-container">
-                    </div>
+                <!-- 추천 도서 카드들이 생성되는 곳 -->
+                <div id="result-container"></div>
                 
+                <!-- [디벨롭 2번] 감정 맞춤형 백색소음 약효 부스터 섹션 -->
+                <div class="bgm-box">
+                    <div class="bgm-title">🎧 [약효 부스터] 함께 들으면 좋은 백색소음</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span id="bgm-name" style="font-size: 13px; color: #78350f;">숲속 도서관 백색소음</span>
+                        <a id="bgm-link" href="#" target="_blank" class="bgm-link-btn">청취하기</a>
+                    </div>
+                </div>
+                
+                <!-- [디벨롭 4번] 안내 문구 -->
                 <div class="search-tip">💡 책 제목을 클릭하면 네이버 도서 검색 페이지로 바로 연결됩니다.</div>
+            </div>
+
+            <!-- [디벨롭 3번] 대학생 마음 상태 통계 리포트 (페이크 실시간 데이터) -->
+            <div class="stats-box">
+                <div class="stats-title">📊 오늘의 대학생 마음 상태 통계 리포트</div>
+                
+                <div class="stat-row">
+                    <div class="stat-labels"><span>🥱 지침/번아웃</span><span class="stat-val">38%</span></div>
+                    <div class="progress-bar"><div id="bar-burnout" class="progress-fill" style="background-color: #f59e0b;"></div></div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-labels"><span>😢 우울/불안</span><span class="stat-val">29%</span></div>
+                    <div class="progress-bar"><div id="bar-depression" class="progress-fill" style="background-color: #ef4444;"></div></div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-labels"><span>🧘 차분/고요</span><span class="stat-val">15%</span></div>
+                    <div class="progress-bar"><div id="bar-calm" class="progress-fill" style="background-color: #10b981;"></div></div>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-labels"><span>💖 설렘/행복</span><span class="stat-val">18%</span></div>
+                    <div class="progress-bar"><div id="bar-happy" class="progress-fill" style="background-color: #ec4899;"></div></div>
+                </div>
             </div>
             
             <button class="btn" onclick="resetPage()" style="background-color: #64748b; box-shadow: none;">다시 처방받기</button>
@@ -211,7 +318,15 @@
     <script>
         let selectedEmotion = "";
 
-        // 각 기분별 책 데이터 베이스 (디벨롭 1번: 처방 사유 문장 고도화)
+        // 각 기분별 책 및 백색소음 BGM 데이터베이스 (디벨롭 2번 BGM 링크 추가)
+        const bgmDatabase = {
+            "지침/번아웃": { name: "🌧️ 지친 마음을 달래는 빗소리 ASMR", url: "https://www.youtube.com/results?search_query=지친+마음+빗소리+asmr" },
+            "우울/불안": { name: "🎹 마음에 안정을 주는 평온한 피아노 BGM", url: "https://www.youtube.com/results?search_query=마음+안정+피아노+클래식" },
+            "행복": { name: "☕ 기분 좋은 주말 아침 어쿠스틱 팝 BGM", url: "https://www.youtube.com/results?search_query=기분좋은+아침+어쿠스틱+팝" },
+            "차분": { name: "🔥 사색을 돕는 장작 타는 소리 불멍 ASMR", url: "https://www.youtube.com/results?search_query=장작+타는+소리+불멍+asmr" },
+            "설렘": { name: "🌸 몽글몽글한 지브리 오케스트라 메들리", url: "https://www.youtube.com/results?search_query=지브리+오케스트라+메들리" }
+        };
+
         const bookDatabase = {
             "지침/번아웃": [
                 { title: "아무것도 하지 않을 자유", author: "피에르 자우이", usage: "공강 시간이나 하교 길에 따뜻한 음료와 함께 복용할 것.", reason: "쉼 없이 달려온 당신에게 진짜 휴식이 무엇인지 언어적 사색을 선물합니다." },
@@ -234,7 +349,7 @@
                 { title: "조용히 이기는 사람들", author: "실비아 뢰켄", usage: "자기계발이나 내면 성찰이 필요할 때 정독할 것.", reason: "차분하고 내향적인 사람만이 가질 수 있는 강력한 내면의 언어와 소통 방식을 조명합니다." }
             ],
             "설렘": [
-                { title: "보통의 존재", author: "이석원", usage: "마음이 몽글몽글해지는 저녁 시간, 감성적인 음악과 함께 복용할 것.", reason: "일상의 평범한 순간들을 감각적인 언어로 재해석하여 설레는 감정을 극대화합니다." },
+                { title: "보통의 존재", author: "이석원", usage: "마음이 몽글몽글해지는 저녁 시간, 감성적인 음악과 함께 복용할 것.", reason: "일상의 평বাম한 순간들을 감각적인 언어로 재해석하여 설레는 감정을 극대화합니다." },
                 { title: "한여름 밤의 꿈", author: "윌리엄 셰익스피어", usage: "주말이나 방학 시즌, 환상적인 상상이 필요할 때 복용할 것.", reason: "시대를 초월한 로맨스와 유쾌한 희극성을 통해 마음속에 기분 좋은 설렘을 심어줍니다." },
                 { title: "방구석 미술관", author: "조원재", usage: "새로운 지적 자극과 예술적 영감을 얻고 싶을 때 수시로 복용할 것.", reason: "화가들의 숨겨진 로맨스와 반전 스토리를 통해 지적인 재미와 예술적 설렘을 동시에 선사합니다." }
             ]
@@ -272,10 +387,9 @@
                 const card = document.createElement('div');
                 card.className = 'book-card';
                 
-                // [디벨롭 4번] 네이버 도서 검색 링크 연동 (자동 검색 URL 템플릿 적용)
+                // [디벨롭 4번] 네이버 도서 검색 링크 연동
                 const searchUrl = `https://search.shopping.naver.com/book/search?query=${encodeURIComponent(book.title)}`;
                 
-                // [디벨롭 1번] 약 봉투/처방전 서식 스타일로 정보 맵핑
                 card.innerHTML = `
                     <a href="${searchUrl}" target="_blank" class="book-title-link" title="네이버 도서에서 검색하기">
                         ${index + 1}. 📋 ${book.title}
@@ -291,12 +405,33 @@
                 resultContainer.appendChild(card);
             });
 
+            // [디벨롭 2번] 감정별 백색소음 동적 세팅
+            const currentBgm = bgmDatabase[selectedEmotion];
+            document.getElementById('bgm-name').innerText = currentBgm.name;
+            document.getElementById('bgm-link').href = currentBgm.url;
+
+            // 최종 화면으로 이동
             nextPage(3);
+
+            // [디벨롭 3번] 실시간 통계 그래프 애니메이션 채우기 (화면 전환 직후 실행)
+            setTimeout(() => {
+                document.getElementById('bar-burnout').style.width = "38%";
+                document.getElementById('bar-depression').style.width = "29%";
+                document.getElementById('bar-calm').style.width = "15%";
+                document.getElementById('bar-happy').style.width = "18%";
+            }, 300);
         }
 
         function resetPage() {
             selectedEmotion = "";
             document.querySelectorAll('.emotion-item').forEach(item => item.classList.remove('selected'));
+            
+            // 통계 바 초기화
+            document.getElementById('bar-burnout').style.width = "0%";
+            document.getElementById('bar-depression').style.width = "0%";
+            document.getElementById('bar-calm').style.width = "0%";
+            document.getElementById('bar-happy').style.width = "0%";
+            
             nextPage(1);
         }
     </script>
