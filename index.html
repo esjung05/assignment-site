@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기분 맞춤형 책 처방전</title>
+    <style>
+        /* 기본 스타일 및 반응형 웹 디자인 */
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        h1 { color: #2c3e50; font-size: 24px; margin-bottom: 10px; }
+        p { color: #7f8c8d; font-size: 16px; margin-bottom: 30px; }
+        
+        /* 버튼 스타일 */
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        .btn:hover { background-color: #2980b9; }
+
+        /* 화면 전환용 클래스 */
+        .page { display: none; }
+        .active { display: block; }
+
+        /* 감정 선택 리스트 스타일 */
+        .emotion-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .emotion-item {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .emotion-item:hover { background-color: #bdc3c7; }
+        .emotion-item.selected {
+            background-color: #e8f4fd;
+            border-color: #3498db;
+            color: #3498db;
+        }
+
+        /* 결과 화면 스타일 */
+        .book-card {
+            background-color: #f9f9f9;
+            border-left: 5px solid #3498db;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: left;
+            border-radius: 0 10px 10px 0;
+        }
+        .book-title { font-size: 18px; font-weight: bold; color: #2c3e50; margin-bottom: 5px; }
+        .book-author { font-size: 14px; color: #95a5a6; margin-bottom: 10px; }
+        .book-desc { font-size: 14px; color: #34495e; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 첫번째 화면 -->
+        <div id="page1" class="page active">
+            <h1>📖 오늘 내 기분에 맞는 책 처방전 📖</h1>
+            <p>기분에 따른 책을 추천해드립니다!</p>
+            <button class="btn" onclick="nextPage(2)">처방받기</button>
+        </div>
+
+        <!-- 두번째 화면 -->
+        <div id="page2" class="page">
+            <h1>현재 기분을 선택해주세요</h1>
+            <p>오늘 대학생 학우님의 감정은 어떠신가요?</p>
+            <div class="emotion-list">
+                <div class="emotion-item" onclick="selectEmotion('지침/번아웃')">🥱 지침/번아웃</div>
+                <div class="emotion-item" onclick="selectEmotion('우울/불안')">😢 우울/불안</div>
+                <div class="emotion-item" onclick="selectEmotion('행복')">🥰 행복</div>
+                <div class="emotion-item" onclick="selectEmotion('차분')">🧘 차분</div>
+                <div class="emotion-item" onclick="selectEmotion('설렘')">💖 설렘</div>
+            </div>
+            <button class="btn" onclick="getPrescription()">책 처방받기</button>
+        </div>
+
+        <!-- 세번째 화면 (최종 페이지) -->
+        <div id="page3" class="page">
+            <h1>오늘의 책 처방 결과입니다!</h1>
+            <p>학우님의 마음을 채워줄 2권의 책입니다.</p>
+            <div id="result-container">
+                <!-- 결과 책 리스트가 여기에 동적으로 생성됩니다 -->
+            </div>
+            <button class="btn" onclick="resetPage()" style="margin-top: 15px; background-color: #95a5a6;">다시 처방받기</button>
+        </div>
+    </div>
+
+    <script>
+        // 사용자가 선택한 감정을 실시간 저장할 변수
+        let selectedEmotion = "";
+
+        // 각 기분별 책 데이터 리스트 (요구사항 반영)
+        const bookDatabase = {
+            "지침/번아웃": [
+                { title: "아무것도 하지 않을 자유", author: "피에르 자우이", desc: "쉼 없이 달려온 당신에게 진짜 휴식이 무엇인지 알려주는 책입니다." },
+                { title: "내가 틀릴 수도 있습니다", author: "비욘 나티코 린데블라드", desc: "지친 마음에 위로를 전하며, 완벽해야 한다는 강박을 내려놓게 도와줍니다." },
+                { title: "번아웃의 종말", author: "조나단 말레식", desc: "일과 삶의 균형을 잃은 현대 대학생들에게 권하는 처방전입니다." }
+            ],
+            "우울/불안": [
+                { title: "죽고 싶지만 떡볶이는 먹고 싶어", author: "백세희", desc: "가벼운 우울감과 불안에 시달리는 사람들을 위한 공감과 위로의 대화 기록." },
+                { title: "마음 가면", author: "브레네 브라운", desc: "나의 취약함을 인정하고 불안을 다스리는 단단한 마음의 힘을 길러줍니다." },
+                { title: "불안", author: "알랭 드 보통", desc: "우리가 왜 불안해하는지 그 원인을 짚어보며 마음의 안정을 찾게 해줍니다." }
+            ],
+            "행복": [
+                { title: "행복의 기원", author: "서은국", desc: "진화론적 관점에서 행복이 무엇인지 가볍고 흥미롭게 풀어낸 책입니다." },
+                { title: "꾸뻬 씨의 행복 여행", author: "프랑수아 를로르", desc: "행복을 찾아 떠난 정신과 의사의 이야기를 통해 일상의 소중함을 일깨워줍니다." },
+                { title: "꾸준해서 기대되는 사람", author: "김종원", desc: "긍정적인 에너지를 채워주고 내일에 대한 기대를 높여주는 처방입니다." }
+            ],
+            "차분": [
+                { title: "고요할수록 밝아지는 것들", author: "혜민", desc: "공강 시간이나 주말에 조용히 나를 돌아보기 좋은 따뜻한 에세이입니다." },
+                { title: "월든", author: "헨리 데이비드 소로", desc: "자연 속에서 사색하며 마음의 소음을 지우고 차분해질 수 있는 고전입니다." },
+                { title: "조용히 이기는 사람들", author: "실비아 뢰켄", desc: "차분하고 내향적인 사람들의 강력한 내면의 힘을 조명합니다." }
+            ],
+            "설렘": [
+                { title: "보통의 존재", author: "이석원", desc: "일상 속 소소한 감정들을 감각적으로 풀어내어 마음을 몽글몽글하게 만듭니다." },
+                { title: "한여름 밤의 꿈", author: "윌리엄 셰익스피어", desc: "환상적이고 설레는 사랑 이야기를 담은 시대를 초월한 명작입니다." },
+                { title: "방구석 미술관", author: "조원재", desc: "예술가들의 숨겨진 로맨스와 이야기를 알게 되며 새로운 지적 설렘을 느낄 수 있습니다." }
+            ]
+        };
+
+        // 화면 전환 함수
+        function nextPage(pageNumber) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById('page' + pageNumber).classList.add('active');
+        }
+
+        // 2번째 화면: 감정 선택 시 변수에 저장 및 하이라이트 효과
+        function selectEmotion(emotion) {
+            selectedEmotion = emotion;
+            
+            // 모든 항목에서 selected 클래스 제거 후 선택한 항목에만 추가
+            document.querySelectorAll('.emotion-item').forEach(item => {
+                item.classList.remove('selected');
+                if(item.innerText.includes(emotion)) {
+                    item.classList.add('selected');
+                }
+            });
+        }
+
+        // 3번째 화면: 책 처방하기 버튼 클릭 (요구사항의 if문 구현)
+        function getPrescription() {
+            // [if문 사용 요구사항] 감정을 선택하지 않았을 경우 실행 안 됨
+            if (selectedEmotion === "") {
+                alert("현재 기분을 먼저 선택해주셔야 책 처방이 가능합니다! 💊");
+                return; 
+            }
+
+            // 사용자가 선택한 감정에 해당하는 책 리스트 가져오기
+            const bookList = bookDatabase[selectedEmotion];
+            
+            // 리스트를 무작위로 섞어서 2개 추출하기 (랜덤 2개 제공 요구사항)
+            const shuffled = bookList.sort(() => 0.5 - Math.random());
+            const final_books = shuffled.slice(0, 2); // [final_books 변수 저장 요구사항]
+
+            // 최종 페이지에 책 정보 뿌려주기
+            const resultContainer = document.getElementById('result-container');
+            resultContainer.innerHTML = ""; // 기존 내용 초기화
+
+            final_books.forEach((book, index) => {
+                const card = document.createElement('div');
+                card.className = 'book-card';
+                card.innerHTML = `
+                    <div class="book-title">${index + 1}. ${book.title}</div>
+                    <div class="book-author">저자: ${book.author}</div>
+                    <div class="book-desc"><strong>추천 이유 / 한줄평:</strong><br>${book.desc}</div>
+                `;
+                resultContainer.appendChild(card);
+            });
+
+            // 최종 화면으로 이동
+            nextPage(3);
+        }
+
+        // 초기화 후 첫 화면으로 이동
+        function resetPage() {
+            selectedEmotion = "";
+            document.querySelectorAll('.emotion-item').forEach(item => item.classList.remove('selected'));
+            nextPage(1);
+        }
+    </script>
+</body>
+</html>
